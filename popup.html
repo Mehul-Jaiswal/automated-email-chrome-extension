@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartDraft</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 350px;
+            min-height: 400px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a73e8, #4285f4);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .status-section {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .status-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .status-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-dot.connected {
+            background: #34a853;
+        }
+
+        .status-dot.disconnected {
+            background: #ea4335;
+        }
+
+        .status-dot.warning {
+            background: #fbbc04;
+        }
+
+        .quick-actions {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .quick-actions h3 {
+            font-size: 14px;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .action-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .action-button:hover {
+            background: #1557b0;
+        }
+
+        .action-button:last-child {
+            margin-bottom: 0;
+        }
+
+        .action-button.secondary {
+            background: #f8f9fa;
+            color: #1a73e8;
+            border: 1px solid #dadce0;
+        }
+
+        .action-button.secondary:hover {
+            background: #e8f0fe;
+        }
+
+        .stats-section {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats-section h3 {
+            font-size: 14px;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .stat-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .stat-label {
+            color: #666;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #1a73e8;
+        }
+
+        .footer {
+            padding: 16px 20px;
+            text-align: center;
+            border-top: 1px solid #e8eaed;
+            background: white;
+        }
+
+        .footer p {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .footer a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #1a73e8;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #fce8e6;
+            color: #d93025;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+
+        .success-message {
+            background: #e8f5e8;
+            color: #137333;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>SmartDraft</h1>
+        <p>AI Email Assistant</p>
+    </div>
+
+    <div class="content">
+        <div id="loading-section" class="loading" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p>Loading...</p>
+        </div>
+
+        <div id="error-section" style="display: none;">
+            <div class="error-message" id="error-message"></div>
+        </div>
+
+        <div id="main-content">
+            <div class="status-section">
+                <div class="status-item">
+                    <span class="status-label">Gmail Integration</span>
+                    <div class="status-indicator" id="gmail-status">
+                        <div class="status-dot disconnected"></div>
+                        <span>Checking...</span>
+                    </div>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">OpenAI API</span>
+                    <div class="status-indicator" id="api-status">
+                        <div class="status-dot disconnected"></div>
+                        <span>Checking...</span>
+                    </div>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">User Profile</span>
+                    <div class="status-indicator" id="profile-status">
+                        <div class="status-dot disconnected"></div>
+                        <span>Checking...</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quick-actions">
+                <h3>Quick Actions</h3>
+                <button id="open-gmail" class="action-button">Open Gmail</button>
+                <button id="open-settings" class="action-button secondary">Settings</button>
+            </div>
+
+            <div class="stats-section">
+                <h3>Usage Statistics</h3>
+                <div class="stat-item">
+                    <span class="stat-label">Emails Generated</span>
+                    <span class="stat-value" id="emails-generated">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Drafts Saved</span>
+                    <span class="stat-value" id="drafts-saved">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Last Used</span>
+                    <span class="stat-value" id="last-used">Never</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>SmartDraft v1.0.0 | <a href="#" id="help-link">Help</a></p>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

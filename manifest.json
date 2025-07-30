@@ -1,0 +1,48 @@
+{
+  "manifest_version": 3,
+  "name": "SmartDraft - AI Email Assistant",
+  "version": "1.0.0",
+  "description": "AI-powered email drafting assistant that seamlessly integrates with Gmail",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "identity",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://mail.google.com/*",
+    "https://gmail.com/*"
+  ],
+  "oauth2": {
+    "client_id": "YOUR_GOOGLE_CLIENT_ID",
+    "scopes": [
+      "https://www.googleapis.com/auth/gmail.compose",
+      "https://www.googleapis.com/auth/gmail.drafts"
+    ]
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://mail.google.com/*", "https://gmail.com/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"],
+      "run_at": "document_end"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "SmartDraft AI Email Assistant"
+  },
+  "options_page": "options.html",
+  "web_accessible_resources": [
+    {
+      "resources": ["overlay.html", "overlay.css", "overlay.js", "privacy-policy.html"],
+      "matches": ["https://mail.google.com/*", "https://gmail.com/*"]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://api.openai.com https://platform.openai.com;"
+  }
+}
